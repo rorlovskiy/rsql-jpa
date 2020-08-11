@@ -105,7 +105,7 @@ public final class PredicateBuilder {
         if (node instanceof LogicalNode) {
             return createPredicate((LogicalNode)node, root, entity, manager, misc);
         }
-        
+
         if (node instanceof ComparisonNode) {
             return createPredicate((ComparisonNode)node, root, entity, manager, misc);
         }
@@ -117,7 +117,7 @@ public final class PredicateBuilder {
      * Create a Predicate from the RSQL AST logical node.
      *
      * @param logical        RSQL AST logical node.
-     * @param root           From that predicate expression paths depends on. 
+     * @param root           From that predicate expression paths depends on.
      * @param entity  		 The main entity of the query.
      * @param entityManager  JPA EntityManager.
      * @param misc      	 Facade with all necessary tools for predicate creation.
@@ -251,7 +251,7 @@ public final class PredicateBuilder {
     		switch (ComparisonOperatorProxy.asEnum(operator)) {
 	    		case EQUAL : {
 	    			Object argument = arguments.get(0);
-	    			if (argument instanceof String) {
+	    			if (argument instanceof String && ((String) argument).indexOf(LIKE_WILDCARD) >= 0) {
 	    				return createLike(propertyPath, (String) argument, manager);
 	    			} else if (isNullArgument(argument)) {
 	    				return createIsNull(propertyPath, manager);
@@ -261,7 +261,7 @@ public final class PredicateBuilder {
 	    		}
 	    		case NOT_EQUAL : {
 	    			Object argument = arguments.get(0);
-	    			if (argument instanceof String) {
+	    			if (argument instanceof String && ((String) argument).indexOf(LIKE_WILDCARD) >= 0) {
 	    				return createNotLike(propertyPath, (String) argument, manager);
 	    			} else if (isNullArgument(argument)) {
 	    				return createIsNotNull(propertyPath, manager);
@@ -362,7 +362,7 @@ public final class PredicateBuilder {
     private static Predicate createLike(Expression<String> propertyPath, String argument, EntityManager manager) {
         String like = argument.replace(LIKE_WILDCARD, '%');
         CriteriaBuilder builder = manager.getCriteriaBuilder();
-        return builder.like(builder.lower(propertyPath), like.toLowerCase());
+        return builder.like(propertyPath, like);
     }
 
     /**
@@ -600,7 +600,7 @@ public final class PredicateBuilder {
      *
      * @param property       Property name for type extraction.
      * @param classMetadata  Reference class metamodel that holds property type.
-     * @return               Class java type for the property, 
+     * @return               Class java type for the property,
      * 						 if the property is a pluralAttribute it will take the bindable java type of that collection.
      */
     private static <T> Class<?> findPropertyType(String property, ManagedType<T> classMetadata) {
