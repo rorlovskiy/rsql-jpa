@@ -38,6 +38,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: gradle/gradle-build-action@v2
         with:
+          cache-disabled: true
           arguments: build -Preckon.stage=final
 
       - name: "Build with Gradle"
