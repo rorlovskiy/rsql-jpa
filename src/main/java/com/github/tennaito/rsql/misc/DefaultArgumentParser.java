@@ -61,7 +61,7 @@ public class DefaultArgumentParser implements ArgumentParser {
 
         // Nullable object
         if (argument == null || "null".equals(argument.trim().toLowerCase())) {
-        	return (T) null;
+        	return null;
         }
 
         // common types

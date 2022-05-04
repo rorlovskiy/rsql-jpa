@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'org.ajoberstar.reckon' version '0.13.2'
+    id 'org.ajoberstar.reckon' version '0.16.1'
     id "com.github.ben-manes.versions" version "0.42.0"
 }
 
@@ -25,8 +25,11 @@ dependencies {
 }
 
 reckon {
-    scopeFromProp()
-    snapshotFromProp()
+    //scopeFromProp()
+    stages('rc', 'final')
+    snapshots()
+    scopeCalc = calcScopeFromProp()
+    stageCalc = calcStageFromProp()
 }
 
 reckonTagCreate.dependsOn check
