@@ -1,8 +1,12 @@
-# RSQL for JPA
+## Modification in this fork
 
-[![Build Status](https://travis-ci.org/tennaito/rsql-jpa.svg)](https://travis-ci.org/tennaito/rsql-jpa)
-[![Coverage Status](https://coveralls.io/repos/tennaito/rsql-jpa/badge.svg)](https://coveralls.io/r/tennaito/rsql-jpa)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.tennaito/rsql-jpa/badge.svg?style=flat)](http://mvnrepository.com/artifact/com.github.tennaito/rsql-jpa)
+This is a fork from https://github.com/tennaito/rsql-jpa with changes from https://github.com/rorlovskiy/rsql-jpa.
+The change is, that string comparison is done case sensitive, so no lower function is included in the SQL queries,
+which allows the DB to make better use of indexes. Also string comparison is done with equals, unless a
+wildcard symbol '*' is used in the RSQL query.<br>
+Moved to Gradle as the build tool. Upgraded to Java 1.8.
+
+# RSQL for JPA
 
 RESTful Service Query Language (RSQL) is a language and a library designed for searching entries in RESTful services.
 

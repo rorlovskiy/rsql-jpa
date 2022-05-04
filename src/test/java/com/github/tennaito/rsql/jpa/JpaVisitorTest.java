@@ -30,46 +30,34 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 
+import com.github.tennaito.rsql.builder.BuilderTools;
+import com.github.tennaito.rsql.jpa.entity.Course;
+import com.github.tennaito.rsql.misc.SimpleMapper;
+import com.github.tennaito.rsql.parser.ast.ComparisonOperatorProxy;
+import cz.jirutka.rsql.parser.RSQLParser;
+import cz.jirutka.rsql.parser.ast.AbstractNode;
+import cz.jirutka.rsql.parser.ast.ComparisonNode;
+import cz.jirutka.rsql.parser.ast.ComparisonOperator;
+import cz.jirutka.rsql.parser.ast.Node;
+import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import com.github.tennaito.rsql.builder.BuilderTools;
-import com.github.tennaito.rsql.jpa.entity.Course;
-import com.github.tennaito.rsql.misc.SimpleMapper;
-import com.github.tennaito.rsql.parser.ast.ComparisonOperatorProxy;
-
-import cz.jirutka.rsql.parser.RSQLParser;
-import cz.jirutka.rsql.parser.ast.AbstractNode;
-import cz.jirutka.rsql.parser.ast.ComparisonNode;
-import cz.jirutka.rsql.parser.ast.ComparisonOperator;
-import cz.jirutka.rsql.parser.ast.LogicalNode;
-import cz.jirutka.rsql.parser.ast.LogicalOperator;
-import cz.jirutka.rsql.parser.ast.Node;
-import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 
 /**
  * @author AntonioRabelo
  */
 public class JpaVisitorTest extends AbstractVisitorTest<Course> {
 
-	final static XorNode xorNode = new XorNode(new ArrayList<Node>());
-	
     @Before
     public void setUp() throws Exception {
     	entityManager = EntityManagerFactoryInitializer.getEntityManagerFactory().createEntityManager();
@@ -553,16 +541,6 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }  
     
     @Test
-    public void testUnsupportedLogicalNode() throws Exception {
-    	try{
-    		PredicateBuilder.createPredicate(JpaVisitorTest.xorNode, null, Course.class, entityManager, null);
-    		fail();
-    	} catch (IllegalArgumentException e) {
-    		assertEquals("Unknown operator: ^", e.getMessage());
-    	}
-    }
-    
-    @Test
     public void testPrivateConstructor() throws Exception {
     	Constructor<PredicateBuilder> priv = PredicateBuilder.class.getDeclaredConstructor();
     	// It is really private?
@@ -581,65 +559,6 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
 			throw new UnsupportedOperationException();
 		}
     }
-    
-    protected static class XorNode extends LogicalNode {
-
-    	final static LogicalOperator XOR = createLogicalOperatorXor();
-    	
-	    public XorNode(List<? extends Node> children) {
-	        super(XOR, children);
-	    }
-	    
-	    public static void setStaticFinalField(Field field, Object value) throws NoSuchFieldException, IllegalAccessException {
-	    	// we mark the field to be public
-	    	field.setAccessible(true);
-	    	// next we change the modifier in the Field instance to
-	    	// not be final anymore, thus tricking reflection into
-	    	// letting us modify the static final field
-	    	Field modifiersField = Field.class.getDeclaredField("modifiers");
-	    	modifiersField.setAccessible(true);
-	    	int modifiers = modifiersField.getInt(field);
-	    	// blank out the final bit in the modifiers int
-	    	modifiers &= ~Modifier.FINAL;
-	    	modifiersField.setInt(field, modifiers);
-	    	sun.reflect.FieldAccessor fa = sun.reflect.ReflectionFactory.getReflectionFactory().newFieldAccessor(field, false);
-	    	fa.set(null, value);
-	    }
-
-		private static LogicalOperator createLogicalOperatorXor() {
-			LogicalOperator xor = null;
-			try {
-				Constructor<LogicalOperator> cstr = LogicalOperator.class.getDeclaredConstructor(String.class, int.class, String.class);
-				sun.reflect.ReflectionFactory factory = sun.reflect.ReflectionFactory.getReflectionFactory();
-				xor = (LogicalOperator) factory.newConstructorAccessor(cstr).newInstance(new Object[]{"XOR", 2, "^"});
-				
-				Field ordinalField = Enum.class.getDeclaredField("ordinal");
-			    ordinalField.setAccessible(true);
-
-				LogicalOperator[] values = xor.values();
-				Field valuesField = LogicalOperator.class.getDeclaredField("ENUM$VALUES");
-				valuesField.setAccessible(true);
-				LogicalOperator[] newValues = Arrays.copyOf(values, values.length + 1);
-				newValues[newValues.length - 1] = xor;
-				setStaticFinalField(valuesField, newValues);
-				int ordinal = newValues.length - 1;
-				ordinalField.set(xor, ordinal);
-			} catch (ReflectiveOperationException e) {
-				// do nothing
-				e.printStackTrace();
-			}
-			return xor;
-		}
-
-		@Override
-		public LogicalNode withChildren(List<? extends Node> children) {
-			return new XorNode(children);
-		}
-
-		public <R, A> R accept(RSQLVisitor<R, A> visitor, A param) {
-			throw new UnsupportedOperationException();
-		}
-    }  
     
     @Test
     public void testUndefinedRootForPredicate() throws Exception {

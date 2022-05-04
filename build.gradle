@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'org.ajoberstar.reckon' version '0.13.2'
+    id "com.github.ben-manes.versions" version "0.42.0"
+}
+
+group = 'com.nitrobox'
+description = 'RSQL-JPA'
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    maven {
+        url = uri('https://repo.maven.apache.org/maven2/')
+    }
+}
+
+dependencies {
+    implementation 'cz.jirutka.rsql:rsql-parser:2.1.0'
+    implementation 'org.eclipse.persistence:javax.persistence:2.2.1'
+    testImplementation 'org.hibernate:hibernate-entitymanager:5.3.26.Final'
+    testImplementation 'org.eclipse.persistence:eclipselink:2.7.10'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.hsqldb:hsqldb:2.6.1'
+}
+
+reckon {
+    scopeFromProp()
+    snapshotFromProp()
+}
+
+reckonTagCreate.dependsOn check
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier('sources')
+    from sourceSets.main.allSource
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/nitrobox/rsql-jpa")
+            credentials {
+                username = project.findProperty("github.user") ?: System.getenv("GITHUB_USER")
+                password = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar {
+                classifier 'sources'
+            }
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}

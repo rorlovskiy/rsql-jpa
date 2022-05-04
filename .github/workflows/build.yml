@@ -1,0 +1,56 @@
+on: [push, workflow_dispatch]
+#  pull_request:
+#    types: [ opened, synchronize, reopened ]
+#  push:
+#    branches:
+#      - "main"
+#    tags:
+#      - "**"
+
+name: "Continuous Integration"
+
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+    concurrency: ${{ github.ref }}
+    
+    strategy:
+      matrix:
+        java-version:
+          - "11"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Fetch tags"
+        run: "git fetch --unshallow --tags"
+
+      - name: "Setup JDK"
+        uses: "actions/setup-java@v2"
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
+          
+      - name: "Build main with Gradle"
+        if: github.ref == 'refs/heads/main'
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build -Preckon.stage=final
+
+      - name: "Build with Gradle"
+        if: github.ref != 'refs/heads/main'
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+
+      - name: "Publish with Gradle"
+        if: github.ref == 'refs/heads/main'
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: reckonTagPush publish -Preckon.stage=final
+        env:
+          GITHUB_USER: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
