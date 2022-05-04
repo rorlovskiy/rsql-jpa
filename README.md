@@ -4,7 +4,7 @@ This is a fork from https://github.com/tennaito/rsql-jpa with changes from https
 The change is, that string comparison is done case sensitive, so no lower function is included in the SQL queries,
 which allows the DB to make better use of indexes. Also string comparison is done with equals, unless a
 wildcard symbol '*' is used in the RSQL query.<br>
-Moved to Gradle as the build tool. Upgraded to Java 1.8.
+Moved to Gradle as the build tool. Upgraded to Java 11.
 
 # RSQL for JPA
 
