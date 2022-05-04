@@ -25,7 +25,6 @@ dependencies {
 }
 
 reckon {
-    //scopeFromProp()
     stages('rc', 'final')
     snapshots()
     scopeCalc = calcScopeFromProp()
