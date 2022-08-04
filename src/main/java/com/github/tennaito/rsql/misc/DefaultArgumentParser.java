@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,6 +55,7 @@ public class DefaultArgumentParser implements ArgumentParser {
     /* (non-Javadoc)
      * @see br.tennaito.rsql.misc.ArgumentParser#parse(java.lang.String, java.lang.Class)
      */
+    @Override
     public <T> T parse(String argument, Class<T> type)
             throws ArgumentFormatException, IllegalArgumentException {
 
@@ -61,7 +63,7 @@ public class DefaultArgumentParser implements ArgumentParser {
 
         // Nullable object
         if (argument == null || "null".equals(argument.trim().toLowerCase())) {
-        	return (T) null;
+        	return null;
         }
 
         // common types
@@ -74,6 +76,7 @@ public class DefaultArgumentParser implements ArgumentParser {
             if (type.equals(Double.class)  || type.equals(double.class)) return (T) Double.valueOf(argument);
             if (type.equals(Long.class)    || type.equals(long.class)) return (T) Long.valueOf(argument);
             if (type.equals(BigDecimal.class) ) return (T) new BigDecimal(argument);
+            if (type.equals(UUID.class) ) return (T) UUID.fromString(argument);
         } catch (IllegalArgumentException ex) {
             throw new ArgumentFormatException(argument, type);
         }
@@ -112,7 +115,8 @@ public class DefaultArgumentParser implements ArgumentParser {
 	/* (non-Javadoc)
 	 * @see br.tennaito.rsql.misc.ArgumentParser#parse(java.util.List, java.lang.Class)
 	 */
-	public <T> List<T> parse(List<String> arguments, Class<T> type)
+	@Override
+    public <T> List<T> parse(List<String> arguments, Class<T> type)
 			throws ArgumentFormatException, IllegalArgumentException {
     	List<T> castedArguments = new ArrayList<T>(arguments.size());
     	for (String argument : arguments) {
