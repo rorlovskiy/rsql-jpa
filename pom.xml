@@ -1,85 +1,87 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.github.tennaito</groupId>
     <artifactId>rsql-jpa</artifactId>
-    <version>2.0.3.2-SNAPSHOT</version>
+    <version>2.0.3.3</version>
     <packaging>jar</packaging>
-    
-    <!--//////////////////// ABOUT ////////////////////-->
     <name>RSQL-JPA</name>
     <inceptionYear>2015</inceptionYear>
-	<description>A application used to translate  RSQL nodes to JPA Criteria Query.</description>
+    <description>A application used to translate  RSQL nodes to JPA Criteria Query.</description>
     <url>http://github.com/tennaito/rsql-jpa</url>
-
-    <!--//////////////////// LICENSE ////////////////////-->
     <licenses>
         <license>
             <name>MIT</name>
             <url>http://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
-    
-    <!--//////////////////// DEVELOPER///////////////////-->
     <developers>
-    	<developer>
-      		<name>Antonio Rabelo</name>
-    	</developer>
-	</developers>
-    
-	<!--//////////////////// SCM    ////////////////////-->
+        <developer>
+            <name>Antonio Rabelo</name>
+        </developer>
+        <developer>
+            <name>Ruslans Orlovskis</name>
+        </developer>
+    </developers>
     <scm>
         <url>https://github.com/tennaito/rsql-jpa/</url>
         <connection>scm:git:https://github.com/tennaito/rsql-jpa.git</connection>
-        <developerConnection>scm:git:https://github.com/tennaito/rsql-jpa.git</developerConnection>
-    	<tag>HEAD</tag>
-  </scm>
-
-    <!--//////////////////// PROPERTIES ////////////////////-->
-
+        <developerConnection>scm:git:https://github.com/rorlovskiy/rsql-jpa.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.target.version>11</java.target.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
-    <!--//////////////////// DEPENDENCIES ////////////////////-->
     <dependencies>
-
-        <!-- Compile scope -->
         <dependency>
             <groupId>cz.jirutka.rsql</groupId>
             <artifactId>rsql-parser</artifactId>
             <version>2.0.0</version>
         </dependency>
+        <!-- Unfortunately we don't have a canonical javax.persistence 2.1 yet -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version>            
+        </dependency>
 
-		<!-- Unfortunately we don´t have a canonical javax.persistence 2.1 yet -->
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
-			<version>2.1.0</version>
-		</dependency>
-
-        <!-- Test scope -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.3.10.Final</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>eclipselink</artifactId>
-			<version>2.6.0-M3</version>
-			<scope>test</scope>
-		</dependency>
+        <!-- Test only -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+            <scope>test</scope>            
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>2.3.2</version>
+        </dependency>        
+        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>5.3.10.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>2.6.0-M3</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.2</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
@@ -88,84 +90,79 @@
         </dependency>
     </dependencies>
 
-    <!--//////////////////// PROFILES ////////////////////-->
-
     <profiles>
         <profile>
-		    <id>release</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-release-plugin</artifactId>
-						<version>2.5</version>
-						<configuration>
-							<autoVersionSubmodules>true</autoVersionSubmodules>
-							<useReleaseProfile>false</useReleaseProfile>
-							<releaseProfiles>release</releaseProfiles>
-							<goals>deploy nexus-staging:release</goals>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.3</version>
-						<extensions>true</extensions>
-						<configuration>
-							<serverId>ossrh</serverId>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<autoReleaseAfterClose>false</autoReleaseAfterClose>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<version>2.2.1</version>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9.1</version>
-						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.5</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>    
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5</version>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <releaseProfiles>release</releaseProfiles>
+                            <goals>deploy nexus-staging:release</goals>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.3</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
-        <!--
-            General profile for CI to analyze code coverage.
-        -->
+        <!-- General profile for CI to analyze code coverage. -->
         <profile>
             <id>ci</id>
-
             <!-- Will be automatically activated on Travis CI and possibly other CI environments. -->
             <activation>
                 <property>
@@ -182,13 +179,11 @@
 
             <build>
                 <plugins>
-                    <!--
-                        Analyze code coverage with JaCoCo.
-                    -->
+                    <!-- Analyze code coverage with JaCoCo. -->
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-						<version>0.7.1.201405082137</version>
+                        <version>0.8.5</version>
                         <executions>
                             <execution>
                                 <id>prepare-agent</id>
@@ -206,10 +201,8 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>        
-        <!--
-            Profile for Travis CI to use Coveralls.
-        -->
+        </profile>
+        <!-- Profile for Travis CI to use Coveralls. -->
         <profile>
             <id>travis-ci</id>
 
@@ -225,7 +218,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.7.1.201405082137</version>
+                        <version>0.8.5</version>
                         <executions>
                             <!-- Merge execution data for unit and integration tests. -->
                             <execution>
@@ -248,39 +241,36 @@
                         </executions>
                     </plugin>
 
-                    <!--
-                        Plugin for submitting code coverage reports to Coveralls.
-                        To get it work on Travis, add these lines into your .travis.yml:
-                            script: 'mvn verify -B'
-                            after_success: 'mvn jacoco:report coveralls:jacoco'
-                    -->
+                    <!-- Plugin for submitting code coverage reports to Coveralls. 
+                        To get it work on Travis, add these lines into your .travis.yml: script: 
+                        'mvn verify -B' after_success: 'mvn jacoco:report coveralls:jacoco' -->
                     <plugin>
                         <groupId>org.eluder.coveralls</groupId>
                         <artifactId>coveralls-maven-plugin</artifactId>
-						<version>2.2.0</version>                        
+                        <version>2.2.0</version>
                     </plugin>
                 </plugins>
             </build>
-        </profile>        
+        </profile>
     </profiles>
-    
-    <!--//////////////////// DISTRIBUTION ////////////////////-->
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>	
-	<ciManagement>
-		<system>travis</system>
-		<url>https://travis-ci.org/tennaito/rsql-jpa</url>
-	</ciManagement>
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/tennaito/rsql-jpa/issues</url>
-	</issueManagement>	
+
+    <!--//////////////////// DISTRIBUTION //////////////////// -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+    <ciManagement>
+        <system>travis</system>
+        <url>https://travis-ci.org/tennaito/rsql-jpa</url>
+    </ciManagement>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/tennaito/rsql-jpa/issues</url>
+    </issueManagement>
 </project>

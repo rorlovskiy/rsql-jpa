@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -77,6 +78,7 @@ public class DefaultArgumentParser implements ArgumentParser {
             if (type.equals(Long.class)    || type.equals(long.class)) return (T) Long.valueOf(argument);
             if (type.equals(BigDecimal.class) ) return (T) new BigDecimal(argument);
             if (type.equals(UUID.class) ) return (T) UUID.fromString(argument);
+            if (type.equals(ZonedDateTime.class) ) return (T) ZonedDateTime.parse(argument);
         } catch (IllegalArgumentException ex) {
             throw new ArgumentFormatException(argument, type);
         }
