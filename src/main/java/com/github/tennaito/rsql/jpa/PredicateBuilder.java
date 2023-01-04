@@ -36,6 +36,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.metamodel.Attribute;
@@ -211,12 +212,12 @@ public final class PredicateBuilder {
                     Class<?> associationType = findPropertyType(mappedProperty, classMetadata);
                     String previousClass = classMetadata.getJavaType().getName();
                     classMetadata = metaModel.managedType(associationType);
-                    LOG.log(Level.INFO, "Create a join between {0} and {1}.", new Object[]{previousClass, classMetadata.getJavaType().getName()});
+                    LOG.log(Level.INFO, "Create a left join between {0} and {1}.", new Object[]{previousClass, classMetadata.getJavaType().getName()});
 
                     if (root instanceof Join) {
                         root = root.get(mappedProperty);
                     } else {
-                        root = ((From) root).join(mappedProperty);
+                        root = ((From) root).join(mappedProperty, JoinType.LEFT);
                     }
                 } else {
                     LOG.log(Level.INFO, "Create property path for type {0} property {1}.", new Object[]{classMetadata.getJavaType().getName(), mappedProperty});
