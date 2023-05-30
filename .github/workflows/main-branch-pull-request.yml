@@ -11,16 +11,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  label-check:
-    runs-on: ubuntu-latest
-    name: Check pull request label exists.
-    steps:
-      - name: label check
-        uses: nitrobox/template-actions-main/.github/actions/pr-check@v2.11.4
-        with:
-          pr_url: ${{ github.event.pull_request.html_url }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
   check:
     uses: nitrobox/template-actions-main/.github/workflows/java-quality-checks.yml@v2.14.4
     secrets: inherit
