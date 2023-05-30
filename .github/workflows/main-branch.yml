@@ -1,0 +1,24 @@
+name: Merge Main Tasks
+on:
+  push:
+    branches: main
+
+concurrency:
+  group: ${{ github.head_ref || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  quality-checks:
+    uses: nitrobox/template-actions-main/.github/workflows/java-main.yml@v2.11.5
+    with:
+      service-name: nbx-v4/rsql-jpa
+      jira-service-name: rsql-jpa
+      java-version: 17
+    secrets: inherit
+
+
+
+
+
+
+
