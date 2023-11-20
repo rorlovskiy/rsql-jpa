@@ -26,15 +26,14 @@ package com.github.tennaito.rsql.jpa;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
 import cz.jirutka.rsql.parser.ast.AndNode;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
 import cz.jirutka.rsql.parser.ast.OrNode;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 /**
  * JpaCriteriaQueryVisitor
@@ -77,6 +76,7 @@ public class JpaCriteriaCountQueryVisitor<T> extends AbstractJpaVisitor<Criteria
     /* (non-Javadoc)
      * @see cz.jirutka.rsql.parser.ast.RSQLVisitor#visit(cz.jirutka.rsql.parser.ast.AndNode, java.lang.Object)
      */
+    @Override
     public CriteriaQuery<Long> visit(AndNode node, EntityManager entityManager) {
         LOG.log(Level.INFO, "Creating CriteriaQuery for AndNode: {0}", node);
 
@@ -92,6 +92,7 @@ public class JpaCriteriaCountQueryVisitor<T> extends AbstractJpaVisitor<Criteria
     /* (non-Javadoc)
      * @see cz.jirutka.rsql.parser.ast.RSQLVisitor#visit(cz.jirutka.rsql.parser.ast.OrNode, java.lang.Object)
      */
+    @Override
     public CriteriaQuery<Long> visit(OrNode node, EntityManager entityManager) {
         LOG.log(Level.INFO, "Creating CriteriaQuery for OrNode: {0}", node);
 
@@ -107,6 +108,7 @@ public class JpaCriteriaCountQueryVisitor<T> extends AbstractJpaVisitor<Criteria
     /* (non-Javadoc)
      * @see cz.jirutka.rsql.parser.ast.RSQLVisitor#visit(cz.jirutka.rsql.parser.ast.ComparisonNode, java.lang.Object)
      */
+    @Override
     public CriteriaQuery<Long> visit(ComparisonNode node, EntityManager entityManager) {
         LOG.log(Level.INFO, "Creating CriteriaQuery for ComparisonNode: {0}", node);
 

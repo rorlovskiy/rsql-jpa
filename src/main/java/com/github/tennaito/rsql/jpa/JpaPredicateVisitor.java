@@ -26,14 +26,13 @@ package com.github.tennaito.rsql.jpa;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Predicate;
-
 import cz.jirutka.rsql.parser.ast.AndNode;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
 import cz.jirutka.rsql.parser.ast.OrNode;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Predicate;
 
 /**
  * JpaPredicateVisitor
@@ -50,7 +49,7 @@ public class JpaPredicateVisitor<T> extends AbstractJpaVisitor<Predicate, T>  im
 	 * Logger.
 	 */
 	private static final Logger LOG = Logger.getLogger(JpaPredicateVisitor.class.getName());
-	
+
 	/**
 	 * Root.
 	 */
@@ -64,7 +63,7 @@ public class JpaPredicateVisitor<T> extends AbstractJpaVisitor<Predicate, T>  im
 	public JpaPredicateVisitor(T... t) {
 		super(t);
 	}
-	
+
 	/**
 	 * Define the From node.
 	 * @param root From node that expressions path depends on.
@@ -78,7 +77,8 @@ public class JpaPredicateVisitor<T> extends AbstractJpaVisitor<Predicate, T>  im
 	/* (non-Javadoc)
 	 * @see cz.jirutka.rsql.parser.ast.RSQLVisitor#visit(cz.jirutka.rsql.parser.ast.AndNode, java.lang.Object)
 	 */
-	public Predicate visit(AndNode node, EntityManager entityManager) {
+	@Override
+    public Predicate visit(AndNode node, EntityManager entityManager) {
 		LOG.log(Level.INFO, "Creating Predicate for AndNode: {0}", node);
 		return PredicateBuilder.<T>createPredicate(node, root, entityClass, entityManager, getBuilderTools());
 	}
@@ -86,7 +86,8 @@ public class JpaPredicateVisitor<T> extends AbstractJpaVisitor<Predicate, T>  im
 	/* (non-Javadoc)
 	 * @see cz.jirutka.rsql.parser.ast.RSQLVisitor#visit(cz.jirutka.rsql.parser.ast.OrNode, java.lang.Object)
 	 */
-	public Predicate visit(OrNode node, EntityManager entityManager) {
+	@Override
+    public Predicate visit(OrNode node, EntityManager entityManager) {
 		LOG.log(Level.INFO, "Creating Predicate for OrNode: {0}", node);
 		return PredicateBuilder.<T>createPredicate(node, root, entityClass, entityManager, getBuilderTools());
 	}
@@ -94,7 +95,8 @@ public class JpaPredicateVisitor<T> extends AbstractJpaVisitor<Predicate, T>  im
 	/* (non-Javadoc)
 	 * @see cz.jirutka.rsql.parser.ast.RSQLVisitor#visit(cz.jirutka.rsql.parser.ast.ComparisonNode, java.lang.Object)
 	 */
-	public Predicate visit(ComparisonNode node, EntityManager entityManager) {
+	@Override
+    public Predicate visit(ComparisonNode node, EntityManager entityManager) {
 		LOG.log(Level.INFO, "Creating Predicate for ComparisonNode: {0}", node);
     	return PredicateBuilder.<T>createPredicate(node, root, entityClass, entityManager, getBuilderTools());
 	}
