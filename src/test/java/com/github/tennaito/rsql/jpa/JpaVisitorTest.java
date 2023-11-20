@@ -42,12 +42,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,6 +58,11 @@ import cz.jirutka.rsql.parser.ast.LogicalNode;
 import cz.jirutka.rsql.parser.ast.LogicalOperator;
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 /**
  * @author AntonioRabelo

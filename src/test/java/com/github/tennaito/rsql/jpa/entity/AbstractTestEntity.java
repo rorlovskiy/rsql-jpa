@@ -25,9 +25,9 @@ package com.github.tennaito.rsql.jpa.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  *
@@ -35,7 +35,7 @@ import javax.persistence.MappedSuperclass;
  */
 @MappedSuperclass
 public abstract class AbstractTestEntity implements Serializable {
-    
+
     /**
 	 * SERIAL UID.
 	 */
@@ -43,11 +43,11 @@ public abstract class AbstractTestEntity implements Serializable {
 
 	@Id
     private Long id;
-    
+
     @Column
     private String name;
 
-    
+
     public Long getId() {
         return id;
     }
@@ -63,5 +63,5 @@ public abstract class AbstractTestEntity implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
 }
