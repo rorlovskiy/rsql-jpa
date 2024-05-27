@@ -1,93 +1,226 @@
-# rsql-jpa
+# RSQL for JPA
 
+[![Build Status](https://travis-ci.org/tennaito/rsql-jpa.svg)](https://travis-ci.org/tennaito/rsql-jpa)
+[![Coverage Status](https://coveralls.io/repos/tennaito/rsql-jpa/badge.svg)](https://coveralls.io/r/tennaito/rsql-jpa)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.tennaito/rsql-jpa/badge.svg?style=flat)](http://mvnrepository.com/artifact/com.github.tennaito/rsql-jpa)
 
+RESTful Service Query Language (RSQL) is a language and a library designed for searching entries in RESTful services.
 
-## Getting started
+This library provides converter of [RSQL expression](https://github.com/jirutka/rsql-parser) to JPA [Criteria Query](http://docs.oracle.com/javaee/6/tutorial/doc/gjitv.html) (object representation of JPQL), which is translated to SQL query. RSQL was originally created for [KOSapi](https://kosapi.feld.cvut.cz) - RESTful web services for IS at the Czech Technical University in Prague. 
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Feel free to contribute!
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Overview
 
-## Add your files
+The interaction with this API occurs from the  _JpaCriteriaQueryVisitor_ class. It has provided method for configuration purposes: _getBuilderTools_.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+From _getBuilderTools_ you can access or modify the _ArgumentParser_ (a class responsible for parsing the string arguments into respective classes), the _PropertiesMapper_ (a class responsible from re-mapping properties) and an optional _PredicateBuilder_ (needed when you have an new _ComparisonNode_ defined with the rsql-parser API).
 
-```
-cd existing_repo
-git remote add origin https://gitlab-srv.kisters.de/nrg/nrg20/solutions/intern/rsql-jpa.git
-git branch -M master
-git push -uf origin master
-```
+If you want more control you may use the new _JpaPredicateVisitor_ class.
 
-## Integrate with your tools
+In the usage section we will cover all that usages. 
 
-- [ ] [Set up project integrations](https://gitlab-srv.kisters.de/nrg/nrg20/solutions/intern/rsql-jpa/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### _JpaCriteriaQueryVisitor_ class: 
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Example of basic usage with only provided predicate builders, default _ArgumentParser_ and without selectors re-mapping:
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```java
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+// We will need a JPA EntityManager
+EntityManager manager;
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+// Create the JPA Visitor
+RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+// Parse a RSQL into a Node
+Node rootNode = new RSQLParser().parse("id==1");
+
+// Visit the node to retrieve CriteriaQuery
+CriteriaQuery<Course> query = rootNode.accept(visitor, manager);
+
+// Do all sort of operations you want with the criteria query
+query.orderBy(...);
+
+// Execute and get results
+List<Course> courses = entityManager.createQuery(query).getResultList();
+```
+
+If you want to create another comparison node you must configure the Rsql-parser _Node_ and the _JpaCriteriaQueryVisitor_:
+
+```java
+// We will need a JPA EntityManager
+EntityManager manager;
+
+// We will need your specific PredicateBuilderStrategy (if you want a set of new operators create a delegation strategy)
+PredicateBuilderStrategy predicateStrategy = new MyDefOperatorStrategy();
+
+// Create the JPA Visitor
+JpaCriteriaQueryVisitor<Course> visitor = new JpaCriteriaQueryVisitor<Course>();
+visitor.getBuilderTools().setPredicateBuilder(predicateStrategy);
+
+// Define the new operator into rsql-parser API
+Set<ComparisonOperator> operators = RSQLOperators.defaultOperators();
+operators.add(new ComparisonOperator("=def="));
+
+// execute parser
+Node rootNode = new RSQLParser(operators).parse("id=def=1");
+
+// Visit the node to retrieve CriteriaQuery
+CriteriaQuery<Course> query = rootNode.accept(visitor, manager);
+
+// Execute and get results
+List<Course> courses = entityManager.createQuery(query).getResultList();
+```
+
+If you want to change to argument parser you must configure the _JpaCriteriaQueryVisitor_:
+
+```java
+// We will need a JPA EntityManager
+EntityManager manager;
+
+// We will need your specific ArgumentParser
+ArgumentParser argumentParser = new MyNewArgumentParser();
+
+// Create the JPA Visitor
+JpaCriteriaQueryVisitor<Course> visitor = new JpaCriteriaQueryVisitor<Course>();
+visitor.getBuilderTools().setArgumentParser(argumentParser);
+
+// execute parser
+Node rootNode = new RSQLParser().parse("mysteriousElementType==Xyz123");
+
+// Visit the node to retrieve CriteriaQuery
+CriteriaQuery<Course> query = rootNode.accept(visitor, manager);
+
+// Execute and get results
+List<Course> courses = entityManager.createQuery(query).getResultList();
+```
+
+Finally, if you want to re-map the selector property name you must configure the _JpaCriteriaQueryVisitor_:
+```java
+// We will need a JPA EntityManager
+EntityManager manager;
+
+// We will need your specific Mapper
+Mapper propertyMapper = new MyCustomPropertiesMapper();
+
+// Create the JPA Visitor
+JpaCriteriaQueryVisitor<Course> visitor = new JpaCriteriaQueryVisitor<Course>();
+visitor.getBuilderTools().setPropertiesMapper(propertyMapper);
+
+// execute parser (nice feature for translating propertyNames to another language ...)
+// 'departamento' translating to 'department'
+// 'responsavel' translating to 'head'
+// 'sobrenome' translating to 'surname'
+// Node rootNode = new RSQLParser().parse("departamento.responsavel.sobrenome==One");
+
+// execute parser (... or if you want to create aliases)
+// 'd' translating to 'department'
+// 'h' translating to 'head'
+// 'sn' translating to 'surname'
+Node rootNode = new RSQLParser().parse("d.h.sn==One");
+
+// Visit the node to retrieve CriteriaQuery
+CriteriaQuery<Course> query = rootNode.accept(visitor, manager);
+
+// Execute and get results
+List<Course> courses = entityManager.createQuery(query).getResultList();
+```
+
+### _JpaPredicateVisitor_ class:
+
+Example of basic usage with only provided predicate builders, default _ArgumentParser_ and without selectors re-mapping:
+
+```java
+
+// We will need a JPA EntityManager
+EntityManager manager;
+
+// Create criteria and from 
+CriteriaBuilder builder = manager.getCriteriaBuilder();
+CriteriaQuery criteria = builder.createQuery(Course.class);
+From root = criteria.from(Course.class);
+
+// Create the JPA Predicate Visitor
+RSQLVisitor<Predicate, EntityManager> visitor = new JpaPredicateVisitor<Course>().defineRoot(root);
+
+// Parse a RSQL into a Node
+Node rootNode = new RSQLParser().parse("id==1");
+
+// Visit the node to retrieve CriteriaQuery
+Predicate predicate = rootNode.accept(visitor, manager);
+
+// Use generated predicate as you like
+criteria.where(predicate);
+```
+
+## RSQL syntax
+
+RSQL syntax is described on [RSQL-parser’s project page](https://github.com/jirutka/rsql-parser). There’s only one addition described below.
+
+For comparing string arguments with Equals or Not Equals, you can use wildcards `*` and `_`. If the argument begins or ends with an asterisk character `*` (converted to '%' defined in JSR 317, section 4.6.10), it acts as a wild card, matching any characters preceding or following (respectively) that position. If the argument also contains an underscore character `_` (JSR 317, section 4.6.10), it acts as a wildcard, matching exactly one character. It corresponds to the percentage, respectively underscore wildcard of the LIKE condition in SQL.
+
+## Examples of RSQL
+
+I guess that some practical example will come handy. Below is a truncated output from my RESTful service KOSapi.
+
+```xml
+<atom:feed xml:lang="en" xml:base="https://kosapi.fit.cvut.cz/api/3/">
+    ...
+    <atom:entry>
+        <atom:title>Web Services and Middleware</atom:title>
+        <atom:id>https://kosapi.fit.cvut.cz/api/3/courses/MI-MDW</atom:id>
+        ...
+        <atom:content xsi:type="kos:course" atom:type="xml">
+            <code>MI-MDW</code>
+            <completion>CREDIT_EXAM</completion>
+            <credits>4</credits>
+            <name>Web Services and Middleware</name>
+            <season>WINTER</season>
+            <department xlink:href="units/18102">Department of Software Engineering</department>
+            ...
+        </atom:content>
+    </atom:entry>
+    ...
+</atom:feed>
+```
+
+Now some real examples of RSQL queries.
+
+    finds courses which...
+    - /courses?query=code==MI-MDW - code matches MI-MDW
+    - /courses?query=name==*services* - name contains "services"
+    - /courses?query=name=='web services*' - name begins with "web services"
+    - /courses?query=credits>3 - is for more than 3 credits
+    - /courses?query=name==*web*;season==WINTER;(completion==CLFD_CREDIT,completion==CREDIT_EXAM) - name contains "web" and season is "WINTER" and completion is CLFD_CREDIT or CREDIT_EXAM
+    - /courses?query=department.id==18102 - is related with department id 18102
+    - /courses?query=department.name==*engineering - is guaranteed by the department that name ends to "engineering"
+    - /courses?query=name==*services*&orderBy=name&maxResults=50 - name contains "services", order by name and limit output to maximum 50 results
+
+## Maven
+
+```xml
+<dependency>
+    <groupId>com.github.tennaito</groupId>
+    <artifactId>rsql-jpa</artifactId>
+    <version>2.0.2</version>
+</dependency>
+```
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is licensed under [MIT license](http://opensource.org/licenses/MIT).
+
+## Change log
+
+- (2.0.2) Minor changes;
+- (2.0.1) Added Embeddable property Path;
+		  Resolved thread safed of Data formatting;
+		  Minor updates;
+- (2.0.0) Correcting the design of the JPA Queries creation. 
+		  That allows Hibernate provider to work correctly.
+          When using Hibernate only use 4.3.10.Final or newer.
+- (1.0.2) Adding a Predicate Visitor.
+- (1.0.1) Added navigation through collection graphs.
