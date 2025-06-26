@@ -23,6 +23,7 @@
  */
 package com.github.tennaito.rsql.jpa;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -97,7 +98,10 @@ public abstract class AbstractVisitorTest<T> {
 			c.setDepartment(department);
 			c.setDetails(CourseDetails.of("test"));
 			c.getDetails().setTeacher(teacher);
-			c.setStartDate( new Date());
+			Calendar cal = Calendar.getInstance();
+			            cal.set(2016, Calendar.JANUARY, 1);
+			            
+            c.setStartDate(cal.getTime());
 			entityManager.persist(c);
 			
 			entityManager.getTransaction().commit();

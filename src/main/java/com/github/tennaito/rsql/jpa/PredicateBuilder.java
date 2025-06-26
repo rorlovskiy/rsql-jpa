@@ -214,10 +214,10 @@ public final class PredicateBuilder {
                     classMetadata = metaModel.managedType(associationType);
                     LOG.log(Level.INFO, "Create a join between {0} and {1}.", new Object[]{previousClass, classMetadata.getJavaType().getName()});
 
-                    if (root instanceof Join) {
-                        root = root.get(mappedProperty);
-                    } else {
+                    if (root instanceof From) {
                         root = ((From) root).join(mappedProperty);
+                    } else {
+                        root = root.get(mappedProperty);
                     }
                 } else {
                     LOG.log(Level.INFO, "Create property path for type {0} property {1}.", new Object[]{classMetadata.getJavaType().getName(), mappedProperty});
@@ -274,8 +274,7 @@ public final class PredicateBuilder {
 	    			Object argument = arguments.get(0);
                     Predicate predicate;
                     if (argument instanceof Date) {
-                        int days = 1;
-                        predicate = createBetweenThan(propertyPath, modifyDate(argument, days), END_DATE, manager);
+                        predicate = createBetweenThan(propertyPath, (Date)argument, END_DATE, manager);
                     } else if (argument instanceof Number || argument == null) {
                         predicate = createGreaterThan(propertyPath, (Number) argument, manager);
                     } else if (argument instanceof Comparable) {
@@ -304,8 +303,7 @@ public final class PredicateBuilder {
 	    			Object argument = arguments.get(0);
                     Predicate predicate;
                     if (argument instanceof Date) {
-                        int days = -1;
-                        predicate = createBetweenThan(propertyPath, START_DATE, modifyDate(argument, days), manager);
+                        predicate = createBetweenThan(propertyPath, START_DATE, (Date)argument, manager);
                     } else if (argument instanceof Number || argument == null) {
                         predicate = createLessThan(propertyPath, (Number) argument, manager);
                     } else if (argument instanceof Comparable) {

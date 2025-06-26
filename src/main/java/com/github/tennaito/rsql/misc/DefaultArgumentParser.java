@@ -79,6 +79,7 @@ public class DefaultArgumentParser implements ArgumentParser {
             if (type.equals(BigDecimal.class) ) return (T) new BigDecimal(argument);
             if (type.equals(UUID.class) ) return (T) UUID.fromString(argument);
             if (type.equals(ZonedDateTime.class) ) return (T) ZonedDateTime.parse(argument);
+            
         } catch (IllegalArgumentException ex) {
             throw new ArgumentFormatException(argument, type);
         }
@@ -86,6 +87,9 @@ public class DefaultArgumentParser implements ArgumentParser {
         // date
         if (type.equals(Date.class)) {
             return (T) parseDate(argument, type);
+        }
+        if (type.equals(java.sql.Timestamp.class)) {
+        	return (T) new java.sql.Timestamp(parseDate(argument, type).getTime());
         }
 
         // try to parse via valueOf(String s) method

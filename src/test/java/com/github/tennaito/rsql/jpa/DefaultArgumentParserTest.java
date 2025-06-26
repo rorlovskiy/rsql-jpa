@@ -94,7 +94,7 @@ public class DefaultArgumentParserTest {
         assertEquals(expected, actual);
         
         argument = "42.22";
-        expected = new Float(42.22);
+        expected = 42.22F;
         actual = instance.parse(argument, Float.class);
         assertEquals(expected, actual);
         
@@ -104,7 +104,7 @@ public class DefaultArgumentParserTest {
         assertEquals(expected, actual);
         
         argument = "42.22";
-        expected = new Double(42.22);
+        expected = 42.22;
         actual = instance.parse(argument, Double.class);
         assertEquals(expected, actual);
         
@@ -114,7 +114,7 @@ public class DefaultArgumentParserTest {
         assertEquals(expected, actual);
         
         argument = "123456789123456789";
-        expected = new Long(123456789123456789L);
+        expected = 123456789123456789L;
         actual = instance.parse(argument, Long.class);
         assertEquals(expected, actual);
         

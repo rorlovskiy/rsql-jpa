@@ -24,38 +24,14 @@
 package com.github.tennaito.rsql.jpa;
 
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.fail;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.github.tennaito.rsql.builder.BuilderTools;
 import com.github.tennaito.rsql.jpa.entity.Course;
 import com.github.tennaito.rsql.misc.SimpleMapper;
 import com.github.tennaito.rsql.parser.ast.ComparisonOperatorProxy;
-
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.AbstractNode;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
-import cz.jirutka.rsql.parser.ast.LogicalNode;
-import cz.jirutka.rsql.parser.ast.LogicalOperator;
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 import jakarta.persistence.EntityManager;
@@ -63,22 +39,34 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
 
 /**
  * @author AntonioRabelo
  */
 public class JpaVisitorTest extends AbstractVisitorTest<Course> {
 
-    final static XorNode xorNode = new XorNode(new ArrayList<Node>());
-
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         entityManager = EntityManagerFactoryInitializer.getEntityManagerFactory().createEntityManager();
         entityClass = Course.class;
     }
 
     @Test
-    public void testUnknowProperty() throws Exception {
+    public void testUnknowProperty() {
         try {
             Node rootNode = new RSQLParser().parse("invalid==1");
             RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
@@ -92,7 +80,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testSimpleSelection() throws Exception {
+    public void testSimpleSelection() {
         Node rootNode = new RSQLParser().parse("id==1");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -102,7 +90,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testSimpleSelectionWhenPassingArgumentInTemplate() throws Exception {
+    public void testSimpleSelectionWhenPassingArgumentInTemplate() {
         Node rootNode = new RSQLParser().parse("id==1");
         // not a recommended usage
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>(new Course());
@@ -114,7 +102,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
 
 
     @Test
-    public void testNotEqualSelection() throws Exception {
+    public void testNotEqualSelection() {
         Node rootNode = new RSQLParser().parse("id!=1");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -124,7 +112,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testGreaterThanSelection() throws Exception {
+    public void testGreaterThanSelection() {
         Node rootNode = new RSQLParser().parse("id=gt=1");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -133,8 +121,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertEquals(0, courses.size());
     }
 
-    //@Test
-    public void testGreaterThanDate() throws Exception {
+    @Test
+    public void testGreaterThanDate() {
         Node rootNode = new RSQLParser().parse("startDate=gt='2001-01-01'");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -144,7 +132,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testGreaterThanString() throws Exception {
+    public void testGreaterThanString() {
         Node rootNode = new RSQLParser().parse("code=gt='ABC'");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -153,8 +141,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertEquals(1, courses.size());
     }
 
-    //@Test
-    public void testGreaterThanNotComparable() throws Exception {
+    @Test
+    public void testGreaterThanNotComparable() {
         try {
             Node rootNode = new RSQLParser().parse("details.teacher=gt='ABC'");
             RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
@@ -166,7 +154,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testGreaterThanEqualSelection() throws Exception {
+    public void testGreaterThanEqualSelection() {
         Node rootNode = new RSQLParser().parse("id=ge=1");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -175,8 +163,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertEquals("Testing Course", courses.get(0).getName());
     }
 
-    //@Test
-    public void testGreaterThanEqualSelectionForDate() throws Exception {
+    @Test
+    public void testGreaterThanEqualSelectionForDate() {
         Node rootNode = new RSQLParser().parse("startDate=ge='2016-01-01'");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -186,7 +174,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testGreaterThanEqualSelectionForString() throws Exception {
+    public void testGreaterThanEqualSelectionForString() {
         Node rootNode = new RSQLParser().parse("code=ge='MI-MDW'");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -195,8 +183,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertEquals("Testing Course", courses.get(0).getName());
     }
 
-    //@Test
-    public void testGreaterThanEqualNotComparable() throws Exception {
+    @Test
+    public void testGreaterThanEqualNotComparable() {
         try {
             Node rootNode = new RSQLParser().parse("details.teacher=ge='ABC'");
             RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
@@ -208,7 +196,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testLessThanSelection() throws Exception {
+    public void testLessThanSelection() {
         Node rootNode = new RSQLParser().parse("id=lt=1");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -218,7 +206,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testLessThanEqualSelection() throws Exception {
+    public void testLessThanEqualSelection() {
         Node rootNode = new RSQLParser().parse("id=le=1");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -227,8 +215,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertEquals("Testing Course", courses.get(0).getName());
     }
 
-    //@Test
-    public void testLessThanDate() throws Exception {
+    @Test
+    public void testLessThanDate() {
         Node rootNode = new RSQLParser().parse("startDate=lt='2022-02-02'");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -238,7 +226,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testLessThanString() throws Exception {
+    public void testLessThanString() {
         Node rootNode = new RSQLParser().parse("code=lt='MI-MDZ'");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -247,8 +235,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertEquals(1, courses.size());
     }
 
-    //@Test
-    public void testLessThanNotComparable() throws Exception {
+    @Test
+    public void testLessThanNotComparable() {
         try {
             Node rootNode = new RSQLParser().parse("details.teacher=lt='ABC'");
             RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
@@ -259,8 +247,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         }
     }
 
-    //@Test
-    public void testLessThanEqualSelectionForDate() throws Exception {
+    @Test
+    public void testLessThanEqualSelectionForDate() {
         Node rootNode = new RSQLParser().parse("startDate=le='2100-01-01'");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -270,7 +258,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testLessThanEqualSelectionForString() throws Exception {
+    public void testLessThanEqualSelectionForString() {
         Node rootNode = new RSQLParser().parse("code=le='MI-MDW'");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -279,8 +267,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertEquals("Testing Course", courses.get(0).getName());
     }
 
-    //@Test
-    public void testLessThanEqualNotComparable() throws Exception {
+    @Test
+    public void testLessThanEqualNotComparable() {
         try {
             Node rootNode = new RSQLParser().parse("details.teacher=le='ABC'");
             RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
@@ -293,7 +281,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
 
 
     @Test
-    public void testInSelection() throws Exception {
+    public void testInSelection() {
         Node rootNode = new RSQLParser().parse("id=in=(1,2,3,4)");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -303,7 +291,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testOutSelection() throws Exception {
+    public void testOutSelection() {
         Node rootNode = new RSQLParser().parse("id=out=(1,2,3,4)");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -313,7 +301,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testLikeSelection() throws Exception {
+    public void testLikeSelection() {
         Node rootNode = new RSQLParser().parse("name==*Course");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -323,7 +311,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testNotLikeSelection() throws Exception {
+    public void testNotLikeSelection() {
         Node rootNode = new RSQLParser().parse("name!=*Course");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -334,7 +322,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
 
 
     @Test
-    public void testIsNullSelection() throws Exception {
+    public void testIsNullSelection() {
         Node rootNode = new RSQLParser().parse("name==null");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -344,7 +332,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testNotIsNullSelection() throws Exception {
+    public void testNotIsNullSelection() {
         Node rootNode = new RSQLParser().parse("name!=null");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -412,7 +400,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testAssociationSelection() throws Exception {
+    public void testAssociationSelection() {
         Node rootNode = new RSQLParser().parse("department.id==1");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -422,7 +410,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testAssociationAliasSelection() throws Exception {
+    public void testAssociationAliasSelection() {
         Node rootNode = new RSQLParser().parse("dept.id==1");
         JpaCriteriaQueryVisitor<Course> visitor = new JpaCriteriaQueryVisitor<Course>();
         // add to SimpleMapper
@@ -439,7 +427,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testAssociationAliasSelectionWithAssociationAlias() throws Exception {
+    public void testAssociationAliasSelectionWithAssociationAlias() {
         Node rootNode = new RSQLParser().parse("dept_id==1");
         JpaCriteriaQueryVisitor<Course> visitor = new JpaCriteriaQueryVisitor<Course>();
         // add to SimpleMapper
@@ -456,7 +444,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testAndSelection() throws Exception {
+    public void testAndSelection() {
         Node rootNode = new RSQLParser().parse("department.id==1;id==2");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -466,30 +454,30 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testBasicSelectionCount() throws Exception {
+    public void testBasicSelectionCount() {
         Node rootNode = new RSQLParser().parse("department.id==1");
-        RSQLVisitor<CriteriaQuery<Long>, EntityManager> visitor = new JpaCriteriaCountQueryVisitor<Course>();
+        JpaCriteriaCountQueryVisitor<Course> visitor = new JpaCriteriaCountQueryVisitor<Course>();
         CriteriaQuery<Long> query = rootNode.accept(visitor, entityManager);
 
         Long courseCount = entityManager.createQuery(query).getSingleResult();
-        assertEquals((Long)1l, courseCount);
-        Root<Course> root = ((JpaCriteriaCountQueryVisitor<Course>)visitor).getRoot();
+        assertEquals((Long)1L, courseCount);
+        Root<Course> root = visitor.getRoot();
         assertNotNull(root);
-        ((JpaCriteriaCountQueryVisitor<Course>)visitor).setRoot(root);
+        visitor.setRoot(root);
     }
 
     @Test
-    public void testAndSelectionCount() throws Exception {
+    public void testAndSelectionCount()  {
         Node rootNode = new RSQLParser().parse("department.id==1;id==2");
         RSQLVisitor<CriteriaQuery<Long>, EntityManager> visitor = new JpaCriteriaCountQueryVisitor<Course>();
         CriteriaQuery<Long> query = rootNode.accept(visitor, entityManager);
 
         Long courseCount = entityManager.createQuery(query).getSingleResult();
-        assertEquals((Long)0l, courseCount);
+        assertEquals((Long)0L, courseCount);
     }
 
     @Test
-    public void testOrSelection() throws Exception {
+    public void testOrSelection() {
         Node rootNode = new RSQLParser().parse("department.id==1,id==2");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -499,7 +487,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testOrSelectionCount() throws Exception {
+    public void testOrSelectionCount() {
         Node rootNode = new RSQLParser().parse("department.id==1,id==2");
         RSQLVisitor<CriteriaQuery<Long>, EntityManager> visitor = new JpaCriteriaCountQueryVisitor<Course>();
         CriteriaQuery<Long> query = rootNode.accept(visitor, entityManager);
@@ -509,7 +497,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testVariousNodesSelection() throws Exception {
+    public void testVariousNodesSelection() {
         Node rootNode = new RSQLParser().parse("((department.id==1;id==2),id<3);department.id=out=(3,4,5)");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -518,8 +506,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertEquals("Testing Course", courses.get(0).getName());
     }
 
-    //@Test
-    public void testNavigateThroughCollectionSelection() throws Exception {
+    @Test
+    public void testNavigateThroughCollectionSelection() {
         Node rootNode = new RSQLParser().parse("department.head.titles.name==Phd");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -529,7 +517,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testUnsupportedNode() throws Exception {
+    public void testUnsupportedNode() {
         try{
             PredicateBuilder.createPredicate(new OtherNode(), null, null, null, null);
             fail();
@@ -539,7 +527,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testSetBuilderTools() throws Exception {
+    public void testSetBuilderTools() {
         JpaCriteriaQueryVisitor<Course> visitor = new JpaCriteriaQueryVisitor<Course>();
         visitor.setBuilderTools(null);
         assertNotNull(visitor.getBuilderTools());
@@ -554,16 +542,6 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertNull(visitor.getBuilderTools().getPredicateBuilder());
     }
 
-    //@Test
-    public void testUnsupportedLogicalNode() throws Exception {
-        try{
-            PredicateBuilder.createPredicate(JpaVisitorTest.xorNode, null, Course.class, entityManager, null);
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals("Unknown operator: ^", e.getMessage());
-        }
-    }
-
     @Test
     public void testPrivateConstructor() throws Exception {
         Constructor<PredicateBuilder> priv = PredicateBuilder.class.getDeclaredConstructor();
@@ -575,79 +553,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertNotNull(predicateBuilder);
     }
 
-    ////////////////////////// Mocks //////////////////////////
-
-    protected static class OtherNode extends AbstractNode {
-
-        @Override
-        public <R, A> R accept(RSQLVisitor<R, A> visitor, A param) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    protected static class XorNode extends LogicalNode {
-
-        final static LogicalOperator XOR = createLogicalOperatorXor();
-
-        public XorNode(List<? extends Node> children) {
-            super(XOR, children);
-        }
-
-        public static void setStaticFinalField(Field field, Object value) throws NoSuchFieldException, IllegalAccessException {
-            // we mark the field to be public
-            field.setAccessible(true);
-            // next we change the modifier in the Field instance to
-            // not be final anymore, thus tricking reflection into
-            // letting us modify the static final field
-            //FIXME: This doesn't work
-            Field modifiersField = Field.class.getDeclaredField("modifiers");
-            modifiersField.setAccessible(true);
-            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            field.set(null, value);
-        }
-
-        private static LogicalOperator createLogicalOperatorXor() {
-            LogicalOperator xor = null;
-            try {
-                Constructor<LogicalOperator> cstr = LogicalOperator.class.getDeclaredConstructor(String.class, int.class, String.class);
-                cstr.setAccessible(true);
-                MethodHandle h =MethodHandles.lookup().unreflectConstructor(cstr);
-                xor = (LogicalOperator)h.invokeExact("XOR", 2, "^");
-
-                Field ordinalField = Enum.class.getDeclaredField("ordinal");
-                ordinalField.setAccessible(true);
-
-                LogicalOperator[] values = xor.values();
-                Field valuesField = LogicalOperator.class.getDeclaredField("ENUM$VALUES");
-                valuesField.setAccessible(true);
-                LogicalOperator[] newValues = Arrays.copyOf(values, values.length + 1);
-                newValues[newValues.length - 1] = xor;
-                setStaticFinalField(valuesField, newValues);
-                int ordinal = newValues.length - 1;
-                ordinalField.set(xor, ordinal);
-            } catch (ReflectiveOperationException e) {
-                // do nothing
-                e.printStackTrace();
-            } catch (Throwable e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return xor;
-        }
-
-        @Override
-        public LogicalNode withChildren(List<? extends Node> children) {
-            return new XorNode(children);
-        }
-
-        @Override
-        public <R, A> R accept(RSQLVisitor<R, A> visitor, A param) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     @Test
-    public void testUndefinedRootForPredicate() throws Exception {
+    public void testUndefinedRootForPredicate() {
         try {
             Node rootNode = new RSQLParser().parse("id==1");
             RSQLVisitor<Predicate, EntityManager> visitor = new JpaPredicateVisitor<Course>();
@@ -658,7 +565,7 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
-    public void testSelectionUsingEmbeddedField() throws Exception {
+    public void testSelectionUsingEmbeddedField() {
         Node rootNode = new RSQLParser().parse("details.description==test");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -667,8 +574,8 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         assertEquals("Testing Course", courses.get(0).getName());
     }
 
-    //@Test
-    public void testSelectionUsingEmbeddedAssociationField() throws Exception {
+    @Test
+    public void testSelectionUsingEmbeddedAssociationField() {
         Node rootNode = new RSQLParser().parse("details.teacher.specialtyDescription==Maths");
         RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
         CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
@@ -676,4 +583,14 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
         List<Course> courses = entityManager.createQuery(query).getResultList();
         assertEquals("Testing Course", courses.get(0).getName());
     }
+
+    // Mock
+    protected static class OtherNode extends AbstractNode {
+
+        @Override
+        public <R, A> R accept(RSQLVisitor<R, A> visitor, A param) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
 }
