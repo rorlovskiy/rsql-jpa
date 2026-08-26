@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Jakub Jirutka <jakub@jirutka.cz>.
+ * Copyright 2013 Jakub Jirutka jakub@jirutka.cz.
  * Coryright 2015 Antonio Rabelo.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,7 +28,7 @@ package com.github.tennaito.rsql.misc;
  * Indicate that argument is not in suitable format required by entity's
  * property, i.e. is not parseable to the specified type.
  *
- * @author Jakub Jirutka <jakub@jirutka.cz>
+ * @author Jakub Jirutka jakub@jirutka.cz
  * @author AntonioRabelo
  */
 public class ArgumentFormatException extends RuntimeException {

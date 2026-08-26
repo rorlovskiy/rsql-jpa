@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Jakub Jirutka <jakub@jirutka.cz>.
+ * Copyright 2013 Jakub Jirutka jakub@jirutka.cz.
  * Copyright 2015 Antonio Rabelo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,7 +30,7 @@ import java.util.List;
  * Interface for Argument Parser that is used for parsing given string argument
  * from RSQL query according to type of the target property.
  *
- * @author Jakub Jirutka <jakub@jirutka.cz>
+ * @author Jakub Jirutka jakub@jirutka.cz
  * @author AntonioRabelo
  */
 public interface ArgumentParser {

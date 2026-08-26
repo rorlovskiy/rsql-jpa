@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Jakub Jirutka <jakub@jirutka.cz>.
+ * Copyright 2013 Jakub Jirutka jakub@jirutka.cz.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ package com.github.tennaito.rsql.misc;
 /**
  * Provides mapping of selectors in RSQL to property names of entities.
  *
- * @author Jakub Jirutka <jakub@jirutka.cz>
+ * @author Jakub Jirutka jakub@jirutka.cz
  */
 public interface Mapper {
 

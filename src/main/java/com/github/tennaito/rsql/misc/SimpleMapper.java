@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Jakub Jirutka <jakub@jirutka.cz>.
+ * Copyright 2013 Jakub Jirutka jakub@jirutka.cz.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 /**
  * Simple implementation of the {@link Mapper}.
  *
- * @author Jakub Jirutka <jakub@jirutka.cz>
+ * @author Jakub Jirutka jakub@jirutka.cz
  */
 public class SimpleMapper implements Mapper {
 
@@ -104,7 +104,7 @@ public class SimpleMapper implements Mapper {
     /**
      * Set the mapping of selectors to property names per entity class.
      *
-     * @param Mapping {entity class -> {selector -> property}}
+     * @param mapping {entity class -> {selector -> property}}
      */
     public void setMapping(Map<Class<?>, Map<String, String>> mapping) {
         this.mapping = mapping;
