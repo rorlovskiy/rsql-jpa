@@ -1,14 +1,87 @@
 # RSQL for JPA
 
-[![Build Status](https://travis-ci.org/tennaito/rsql-jpa.svg)](https://travis-ci.org/tennaito/rsql-jpa)
-[![Coverage Status](https://coveralls.io/repos/tennaito/rsql-jpa/badge.svg)](https://coveralls.io/r/tennaito/rsql-jpa)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.tennaito/rsql-jpa/badge.svg?style=flat)](http://mvnrepository.com/artifact/com.github.tennaito/rsql-jpa)
+[![CI](https://github.com/rorlovskiy/rsql-jpa/actions/workflows/ci.yml/badge.svg)](https://github.com/rorlovskiy/rsql-jpa/actions/workflows/ci.yml)
+[![GitHub Packages](https://img.shields.io/badge/GitHub%20Packages-com.github.rorlovskiy%3Arsql--jpa-blue)](https://github.com/rorlovskiy/rsql-jpa/packages)
 
 RESTful Service Query Language (RSQL) is a language and a library designed for searching entries in RESTful services.
 
 This library provides converter of [RSQL expression](https://github.com/jirutka/rsql-parser) to JPA [Criteria Query](http://docs.oracle.com/javaee/6/tutorial/doc/gjitv.html) (object representation of JPQL), which is translated to SQL query. RSQL was originally created for [KOSapi](https://kosapi.feld.cvut.cz) - RESTful web services for IS at the Czech Technical University in Prague. 
 
 Feel free to contribute!
+
+## Installation
+
+Released artifacts are published to **GitHub Packages** from this repository.
+
+Add the repository and the dependency to your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>github</id>
+        <name>GitHub Packages</name>
+        <url>https://maven.pkg.github.com/rorlovskiy/rsql-jpa</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>com.github.rorlovskiy</groupId>
+        <artifactId>rsql-jpa</artifactId>
+        <version>3.0.0</version>
+    </dependency>
+</dependencies>
+```
+
+### Authentication (required)
+
+GitHub Packages requires an authenticated request **even for public packages**. Add a matching
+`server` entry to your `~/.m2/settings.xml`, using a personal access token with the
+`read:packages` scope:
+
+```xml
+<settings>
+    <servers>
+        <server>
+            <id>github</id>
+            <username>YOUR_GITHUB_USERNAME</username>
+            <password>YOUR_PERSONAL_ACCESS_TOKEN</password>
+        </server>
+    </servers>
+</settings>
+```
+
+The `<id>` must be `github` so it matches the `<repository><id>` above.
+
+In a consuming GitHub Actions workflow no PAT is needed — `actions/setup-java` generates the
+settings file for you:
+
+```yaml
+- uses: actions/setup-java@v4
+  with:
+    java-version: '17'
+    distribution: 'temurin'
+    server-id: github
+# ...
+- run: mvn -B verify
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Each release publishes the main jar plus `-sources` and `-javadoc` jars.
+
+### Requirements
+
+Java 17+, Jakarta Persistence 3.1 (Spring Boot 3.x / Hibernate 6.x).
+
+## Releasing
+
+1. Bump `<version>` in `pom.xml`, commit and push to `master`. The `CI` workflow builds and runs the tests.
+2. Create a GitHub Release whose tag matches that version exactly (for example `3.0.0`; a leading `v` is also accepted).
+3. The `Release` workflow verifies the tag against the pom version and runs `mvn deploy`.
+
+GitHub Packages rejects re-deploying a version that already exists (HTTP 409), so every publish
+needs a fresh version bump.
 
 ## Overview
 
@@ -201,13 +274,8 @@ Now some real examples of RSQL queries.
 
 ## Maven
 
-```xml
-<dependency>
-    <groupId>com.github.tennaito</groupId>
-    <artifactId>rsql-jpa</artifactId>
-    <version>3.0.0.0</version>
-</dependency>
-```
+See [Installation](#installation) for the coordinates, the GitHub Packages repository entry and the
+required authentication setup.
 
 ## License
 

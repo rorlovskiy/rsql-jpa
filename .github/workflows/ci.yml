@@ -1,0 +1,29 @@
+# Builds and tests the library on every push and pull request.
+# Publishing happens separately in release.yml.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build and test with Maven
+        run: mvn -B clean verify --file pom.xml

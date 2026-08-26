@@ -1,0 +1,47 @@
+# Publishes the library to GitHub Packages when a GitHub Release is published.
+# GitHub Packages rejects re-deploying an existing release version (HTTP 409),
+# so bump <version> in pom.xml before creating the release.
+
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+          # Matches distributionManagement/repository/id in pom.xml.
+          # setup-java writes ~/.m2/settings.xml with a server entry whose
+          # password reads the GITHUB_TOKEN environment variable.
+          server-id: github
+
+      - name: Verify pom version matches release tag
+        if: github.event_name == 'release'
+        run: |
+          POM_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+          TAG_VERSION=${GITHUB_REF_NAME#v}
+          if [ "$POM_VERSION" != "$TAG_VERSION" ]; then
+            echo "pom.xml version '$POM_VERSION' does not match release tag '$TAG_VERSION'"
+            exit 1
+          fi
+          echo "Publishing version $POM_VERSION"
+
+      - name: Publish to GitHub Packages
+        run: mvn -B deploy --file pom.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
